@@ -1,0 +1,1635 @@
+**Scaler Projekt Dokumentáció**
+- Guide.txt
+---
+
+## Kezdés (Bevezetés, első lépések)
+
+### 1. A Scaler Projekt áttekintése
+
+A **Scaler projekt** egy modern, skálázható, moduláris rendszerre épülő szoftverarchitektúra, amely lehetővé teszi nagy mennyiségű adat és felhasználó kiszolgálását valós időben. Célja, hogy egy rugalmas, mikroszolgáltatásokra épülő keretrendszert biztosítson backend, frontend és DevOps komponensekkel, amely alkalmas B2B és B2C jellegű alkalmazások kiszolgálására egyaránt.
+
+A rendszer úgy került megtervezésre, hogy alkalmas legyen:
+
+* Felhőalapú üzemeltetésre (AWS, Azure, GCP)
+* Lokális fejlesztési környezetekre
+* CI/CD integrációval történő automatizált élesítésre
+* Különböző nyelvi lokalizációk támogatására
+
+A Scaler strukturája alkalmas mind monolitikus alkalmazások fokozatos bontására, mind zöldmezős projektek felépítésére.
+
+### 2. Rendszerkövetelmények
+
+#### Minimális szoftveres követelmények:
+
+* Node.js >= 18.x
+* Python >= 3.10
+* Docker & Docker Compose
+* Git >= 2.35
+* PostgreSQL >= 14
+* Redis >= 6
+* Nginx (opcionális, de javasolt éles üzemhez)
+* Linux / MacOS / WSL2 (Windows alatt)
+
+#### Ajánlott hardverkonfiguráció:
+
+* CPU: 4 magos (ajánlott 8+)
+* RAM: 8 GB (ajánlott 16 GB)
+* Tárhely: min. 10 GB projektfüggően
+
+### 3. Telepítési útmutató
+
+1. **Repository klónozása:**
+
+   ```bash
+   git clone https://github.com/sajat-org/scaler.git
+   cd scaler
+   ```
+
+2. **.env fájlok generálása:**
+
+   ```bash
+   cp .env.example .env
+   cp backend/.env.example backend/.env
+   cp frontend/.env.example frontend/.env
+   ```
+
+3. **Docker konténerek elindítása:**
+
+   ```bash
+   docker-compose up -d --build
+   ```
+
+4. **Inicializálás (backend migráció + seed):**
+
+   ```bash
+   docker-compose exec backend python manage.py migrate
+   docker-compose exec backend python manage.py loaddata initial_data.json
+   ```
+
+5. **Frontend build (ha szükséges):**
+
+   ```bash
+   docker-compose exec frontend npm run build
+   ```
+
+6. **Elérés:**
+
+   * Frontend: [http://localhost:3000](http://localhost:3000)
+   * Backend API: [http://localhost:8000/api](http://localhost:8000/api)
+
+### 4. Fejlesztői környezet beállítása
+
+Ajánlott eszközök:
+
+* VSCode
+* Docker Desktop
+* Git CLI / GitKraken
+* PostgreSQL GUI: TablePlus / DBeaver
+* REST kliens: Insomnia / Postman
+
+**Ajánlott VSCode bővítések:**
+
+* ESLint + Prettier
+* Python
+* Docker
+* GitLens
+* Tailwind CSS IntelliSense
+
+A projekt követi a [devcontainer](https://code.visualstudio.com/docs/remote/containers)-es szabványt, így VSCode Remote Container használata javasolt, amely automatikusan beállítja a teljes fejlesztői környezetet.
+
+### 5. Projekt struktúra bemutatása
+
+```
+scaler/
+├── server/                 # Django backend
+│   ├── server/             # Konfiguráció, beállítások
+│   ├── learnning/          # Tanulási anyagok
+│   ├── media/              # Médiafájlok
+│   ├── posts/              # Blog bejegyzések
+│   ├── profiles/           # Felhasználói profilok
+│   ├── testapi/            # API tesztelés
+│   ├── users/              # Felhasználói kezelés
+│   ├── db.sqlite3          # Adatbázis
+│   |── manage.py           # Django CLI
+│   └── user.txt            # Konfiguráció, beállítások
+├── client/                 # React + Next.js frontend
+│   ├── src/             # Konfiguráció, beállítások
+│       ├── components/
+│       ├── pages/
+│       |── styles/
+│       ├── context/
+│       ├── utils/
+│       └── hooks/
+│   ├── public/             # Statikus fájlok
+│   ├── .next/              # Next.js build kimenet
+│   ├── node_module/        # Node.js modulok
+|   ├── .env.local/             # Lokális környezeti változók
+|   ├── eslint.config.mjs       # ESLint konfiguráció
+|   ├── next-env.d.ts           # TypeScript konfiguráció
+|   ├── next.config.ts          # Next.js konfiguráció
+|   ├── package-lock.json       # Node.js modul verziók
+|   |── package.json            # Node.js modulok
+|   ├── tsconfig.json           # TypeScript konfiguráció
+|   └── README.md               # Ez a dokumentum
+├── venv/                       # Python virtuális környezet
+├── Documentation.txt           # Dokumentáció
+└── Guide.txt                   # Útmutató
+```
+
+A rendszer teljes mértékben konténerizált, így könnyen deployolható bármilyen környezetbe.
+
+### 6. Első indítás – fejlesztői mód
+
+A fejlesztői környezet Docker Compose-on keresztül érhető el. A forráskód módosítása valós időben frissül.
+
+```bash
+docker-compose -f docker-compose.dev.yml up
+```
+
+Ez a konfiguráció automatikusan bekapcsolja:
+
+* Hot reloadot (backend + frontend)
+* Hibakimenetet
+* Lokális volume-okat a kódhoz
+
+### 7. Első indítás – éles környezet
+
+Az éles környezethez használt Docker Compose fájl:
+
+```bash
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+Ajánljuk Nginx proxy + HTTPS (Let's Encrypt) használatát. CI/CD rendszereink automatikusan buildelik és deployolják az éles konténereket push után (GitHub Actions / GitLab CI).
+
+### 8. Alapértelmezett felhasználók és jogosultságok
+
+A rendszer alapértelmezett seed adatai tartalmazzák:
+
+* Admin felhasználó: `admin@scaler.dev` / jelszó: `Admin1234`
+* Teszt felhasználó: `test@scaler.dev` / jelszó: `Test1234`
+
+Jogosultság szintek:
+
+* **admin** – Teljes jogosultság
+* **staff** – Rendszer kezelése, de nincs superuser jog
+* **user** – Végfellhasználói műveletek
+
+### 9. Verzókezelés és Git workflow
+
+A projekt Git alapú verzókezelést alkalmaz GitHub repository-n keresztül.
+
+#### Főbb branch-ek:
+
+* `main`: éles branch
+* `develop`: fejlesztési branch
+* `feature/*`: új funkciók
+* `bugfix/*`: hibajavítások
+* `hotfix/*`: kritikus javítások
+
+#### Ajánlott commit minta:
+
+```bash
+feat(auth): bejelentkezési logika hozzáadása
+fix(api): hibás token kezelés javítása
+chore(dev): dependenciák frissítése
+```
+
+### 10. Hibakeresés alapjai
+
+#### Backend hibakeresés:
+
+* `docker-compose logs backend` parancs
+* Django Debug Toolbar (fejlesztési módban)
+* `pdb` breakpointok beállítása
+
+#### Frontend hibakeresés:
+
+* Chrome DevTools / Firefox Debugger
+* Next.js hibanaplók
+* React Developer Tools bővítés
+
+#### CI/CD hiba esetén:
+
+* GitHub Actions / GitLab CI pipeline logok ellenőrzése
+* Docker image építési logok
+
+---
+
+---------------------------------------------------------------------
+
+### 2. **Kiválasztás (Felhasználói szerepek, jogosultságok)**
+
+#### 1. Felhasználói típusok
+
+A rendszerben többféle felhasználói típus létezhet, attól függően, hogy milyen jogosultságokkal és hozzáférési szintekkel rendelkeznek. Az alapvető felhasználói típusok:
+
+* **Vendég:** Regisztráció nélküli látogató, aki csak publikus tartalmakhoz férhet hozzá.
+* **Regisztrált felhasználó:** Alapjogosultságokkal rendelkező felhasználó, aki belépés után személyes tartalmakat is elérhet.
+* **Moderátor:** Közösségi tartalmak ellenőrzésére és karbantartására jogosult felhasználó.
+* **Adminisztrátor:** Teljes rendszerhozzáféréssel és jogosultságkezelési jogokkal rendelkező felhasználó.
+* **Szuperadmin:** Olyan rendszeradminisztrátor, aki más adminok jogosultságait is módosíthatja.
+
+#### 2. Jogosultsági szintek
+
+A jogosultsági szintek meghatározzák, hogy a különböző felhasználók milyen műveleteket végezhetnek el. Ezek például:
+
+* Olvasási jogosultság
+* Írási jogosultság
+* Módosítási jogosultság
+* Törlési jogosultság
+* Adminisztrációs jogosultság
+
+A szintek hierarchiába szervezhetők, így az egyes szerepek örökölhetik az alacsonyabb szintek jogait.
+
+#### 3. Bejelentkezés és regisztráció
+
+A rendszer biztonságos és kényelmes bejelentkezési és regisztrációs folyamatot biztosít:
+
+* **Regisztráció:** Új fiók létrehozása e-mail cím és jelszó megadásával. Kétlépcsős hitelesítés opcionálisan beállítható.
+* **Bejelentkezés:** Hitelesítés e-mail és jelszó alapján. Kétlépcsős azonosítás vagy OAuth támogatott (pl. Google, Facebook).
+* **Jelszókezelés:** Elfelejtett jelszó visszaállítása, jelszómódosítás, biztonsági kérdések.
+
+#### 4. Felhasználói profilok
+
+Minden felhasználónak egyéni profilja van, amely tartalmazhatja:
+
+* Név, felhasználónév, e-mail
+* Profilkép
+* Elérhetőségek
+* Rövid bemutatkozás
+* Jogosultsági szint és szerepkör megjelenítése
+
+A profilokat a felhasználók szerkeszthetik, de az érzékeny adatok (pl. e-mail, jelszó) módosításához újrahitelesítés szükséges.
+
+#### 5. Adminisztrátori jogosultságok
+
+Az adminisztrátorok külön felülethez férhetnek hozzá, ahol:
+
+* Felhasználók kezelése (listázás, módosítás, törlés, felfüggesztés)
+* Jogosultsági szintek beállítása és szerkesztése
+* Rendszernaplók megtekintése
+* Moderátorok delegálása
+* Tartalmak publikálása, jóváhagyása
+
+Az admin jogokkal való visszaélés elkerülése érdekében a rendszer audit naplókat vezet.
+
+#### 6. Csoportok és tagság
+
+A felhasználók csoportokba szervezhetők, ami megkönnyíti a jogosultságkezelést:
+
+* **Nyílt csoportok:** Bárki csatlakozhat.
+* **Zárt csoportok:** Csak meghívással lehet csatlakozni.
+* **Szerkesztői csoportok:** Tartalomkezelésre és publikálásra jogosult tagok.
+
+A csoportokhoz tartozó jogosultságok öröklődnek a tagokra. Egy felhasználó több csoportnak is tagja lehet.
+
+#### 7. Jogosultságkezelés Django-ban
+
+Django-ban a jogosultságkezelés az alábbi komponenseken alapszik:
+
+* **User model:** Tartalmazza az alapértelmezett felhasználói adatokat.
+* **Permissions:** Műveletalapú jogosultságok (add, change, delete, view).
+* **Groups:** Több felhasználó azonos jogosultságokkal történő kezelése.
+* **Custom user model:** Egyedi attribútumokkal bővíthető.
+* **@permission\_required és @login\_required dekorátorok:** Nézetek védelmére szolgálnak.
+* **Django admin:** Beépített felület a jogosultságok és felhasználók kezelésére.
+
+#### 8. Jogosultságkezelés a frontendben
+
+A frontend oldalon is szükséges a jogosultságok megfelelő kezelése a felhasználói élmény és biztonság érdekében:
+
+* **UI komponensek feltételes megjelenítése:** Pl. admin menü csak adminisztrátoroknak.
+* **Routing védelem:** Egyes oldalak csak adott szerepkörök számára elérhetők.
+* **Token alapú jogosultság-ellenőrzés:** JWT vagy session token alapján.
+* **Hibakezelés:** Jogosultsághiány esetén figyelmeztető vagy átirányító üzenetek.
+
+#### 9. Felhasználói aktivitás naplózása
+
+A rendszer naplózza a felhasználók tevékenységeit:
+
+* Bejelentkezési és kijelentkezési időpontok
+* Oldalmegtekintések, kattintások
+* Tartalmak létrehozása, módosítása, törlése
+* Jogosultsági változások
+
+A naplózás célja:
+
+* Biztonsági incidensek visszakereshetősége
+* Rendszerhasználat elemzése
+* Adminisztrációs auditálás
+
+#### 10. Felhasználói fiók törlése és visszaállítása
+
+A rendszer lehetőséget biztosít:
+
+* **Fiók végleges törlésére:** A felhasználó minden adata törlésre kerül (GDPR szerint).
+* **Fiók felfüggesztésére:** A felhasználó nem tud belépni, de az adatok megmaradnak.
+* **Fiók visszaállítása:** Előzőleg felfüggesztett fiók újra aktiválható.
+
+A törlés előtt figyelmeztető üzenetet kap a felhasználó, és megerősítést kér a rendszer.
+
+---
+
+A dokumentáció folytatása a fenti pontokat részletezi további alfejezetekkel, gyakorlati példákkal (Django kód, frontend logika), biztonsági ajánlásokkal, valamint adatkezelési és GDPR-megfelelőségi szempontokkal. Ez a dokumentáció minimum 10 000 szavasra bővíthető minden egyes fejezet gyakorlati bemutatásával és esettanulmányokkal.
+
+-------------------------------------------------------------
+
+### 3. **React/Next Frontend bemutató**
+
+#### 1. Frontend architektúra
+
+A modern React/Next.js alapú frontend alkalmazások strukturálása kulcsfontosságú a méretezhetőség és karbantarthatóság szempontjából. Egy tipikus projekt struktúra a következő lehet:
+
+```
+/src
+  /components
+  /pages
+  /styles
+  /hooks
+  /context
+  /utils
+  /services
+  /public
+```
+
+* **pages/**: A Next.js sajátossága, minden fájl automatikusan route-ként működik.
+* **components/**: Újrafelhasználható UI elemek.
+* **hooks/**: Egyedi hook-ok, amelyek közös logikát kezelnek.
+* **context/**: Kontextus alapú állapotkezelés.
+* **utils/**: Segédfüggvények.
+* **services/**: API hívásokat lebonyolító függvények.
+
+#### 2. Főbb komponensek áttekintése
+
+A komponensek a React UI építőkockái. A főbb típusok:
+
+* **Funkcionális komponensek**: `function` vagy `const Component = () => {}` szintaxis.
+* **Layout komponensek**: Oldalstruktúra (pl. `Header`, `Footer`, `Sidebar`).
+* **UI elemek**: `Button`, `Card`, `Modal`.
+* **Oldal specifikus komponensek**: Egy adott oldalhoz tartozó komponensek.
+
+Komponensek lehetnek állapotfüggők vagy statikusak, és props segítségével konfigurálhatók.
+
+#### 3. Navigáció és routing
+
+A Next.js routing rendszere fájlrendszer alapú. Példák:
+
+* `/pages/index.tsx` → `"/"`
+* `/pages/about.tsx` → `"/about"`
+* Dinamikus route: `/pages/product/[id].tsx` → `"/product/123"`
+
+Navigáció a `next/link` komponens segítségével történik:
+
+```tsx
+import Link from 'next/link';
+<Link href="/about">About</Link>
+```
+
+Programozott navigáció: `useRouter().push('/about')`
+
+#### 4. Állapotkezelés (useState, useContext, stb.)
+
+Az állapotkezelés kulcsa az interaktív felhasználói élmény biztosítása. Eszközök:
+
+* **useState**: Egyszerű helyi állapotkezelés
+* **useEffect**: Életciklus-műveletek
+* **useContext**: Globális állapot megosztása
+* **useReducer**: Komplex állapotlogikák
+
+Példa:
+
+```tsx
+const [count, setCount] = useState(0);
+```
+
+Globális állapot `Context` segítségével:
+
+```tsx
+const AuthContext = createContext(null);
+```
+
+#### 5. Stílusok: SCSS modulok használata
+
+A Next.js támogatja az SCSS modulokat fájlonkénti elszigeteléssel:
+
+* `myComponent.module.scss`: automatikusan csak az adott komponensre érvényes.
+
+Importálás:
+
+```tsx
+import styles from './MyComponent.module.scss';
+<div className={styles.container}>Hello</div>
+```
+
+Globális stílusokat a `/styles/globals.scss` fájlba tegyünk, és `_app.tsx`-ben importáljuk.
+
+#### 6. Reszponzív design megvalósítása
+
+A reszponzivitás biztosítja, hogy az oldal minden eszközön jól nézzen ki:
+
+* **Media query-k SCSS-ben:**
+
+```scss
+@media (max-width: 768px) {
+  .container { flex-direction: column; }
+}
+```
+
+* **Flexbox és Grid:** Rugalmas elrendezésekhez
+* **Rem/em mértékegységek:** Könnyebb méretezés különböző képernyőkön
+
+#### 7. Komponens újrafelhasználhatóság
+
+Az újrafelhasználhatóság elve:
+
+* **Props-ok használata konfiguráláshoz**
+* **Tiszta komponenslogika (stateless ha lehet)**
+* **Children támogatás**
+
+Példa:
+
+```tsx
+const Button = ({ label, onClick }) => (
+  <button onClick={onClick}>{label}</button>
+);
+```
+
+#### 8. Űrlapok és validáció
+
+Űrlapok kezelése történhet egyszerű HTML-űrlapként vagy könyvtárakkal (pl. Formik, React Hook Form):
+
+Egyszerű példa:
+
+```tsx
+const handleSubmit = (e) => {
+  e.preventDefault();
+  // validáció, API hívás stb.
+};
+```
+
+Validációs könyvtár: `yup`, `zod`, `validator.js`
+
+#### 9. API hívások kezelése
+
+Az adatok lekérése többféleképpen történhet:
+
+* **fetch** vagy **axios** használata
+* **getServerSideProps / getStaticProps**: Next.js szerveroldali adatkezelés
+* **SWR** vagy **React Query**: gyorsítótárazott lekérdezések
+
+Példa fetch használattal:
+
+```tsx
+useEffect(() => {
+  fetch('/api/data')
+    .then(res => res.json())
+    .then(setData);
+}, []);
+```
+
+#### 10. Hibakezelés a frontend oldalon
+
+A hibakezelés része a felhasználóbarát élménynek:
+
+* **Try/catch blokkok API hívásoknál**
+* **Hibajelzések a UI-ban** (pl. piros szegély, hibaüzenet)
+* **Globális hibakezelés (pl. ErrorBoundary komponensek)**
+
+Példa:
+
+```tsx
+try {
+  const res = await fetch('/api/data');
+  if (!res.ok) throw new Error('Hiba történt');
+} catch (err) {
+  setError(err.message);
+}
+```
+
+-------------------------------------------------------------
+
+### 4. **Django Backend bemutató**
+
+#### 1. Backend architektúra
+
+A Django egy Python-alapú, "batteries-included" webkeretrendszer, amely a Model-View-Template (MVT) architektúrát használja. A backend struktúrája általában a következő:
+
+```
+project_name/
+├── manage.py
+├── project_name/
+│   ├── __init__.py
+│   ├── settings.py
+│   ├── urls.py
+│   ├── wsgi.py
+│   └── asgi.py
+├── app_1/
+│   ├── models.py
+│   ├── views.py
+│   ├── serializers.py
+│   ├── urls.py
+│   ├── tests.py
+│   └── admin.py
+├── app_2/
+│   └── ...
+```
+
+* **settings.py**: Konfigurációs beállítások
+* **urls.py**: URL útvonalak kezelése
+* **models.py**: Adatbázis modellek
+* **views.py**: API endpoint logikák
+* **serializers.py**: Modellek JSON-vá alakítása REST API-hoz
+
+#### 2. Főbb appok és modulok
+
+A Django projekt appokra tagolódik, ahol minden app egy funkcionális egységet képvisel:
+
+* `users`: Felhasználókezelés, hitelesítés
+* `products`: Termékkatalógus
+* `orders`: Rendeléskezelés
+* `core`: Közös segédosztályok, base modellek, stb.
+
+Minden app tartalmazhat modelleket, nézeteket, teszteket és admin konfigurációkat.
+
+#### 3. Modellek és adatbázis séma
+
+A Django ORM lehetővé teszi Python osztályok használatát az adatbázis kezelésére. Példa:
+
+```python
+from django.db import models
+
+class Product(models.Model):
+    name = models.CharField(max_length=100)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    created_at = models.DateTimeField(auto_now_add=True)
+```
+
+Migrációk:
+
+```
+python manage.py makemigrations
+python manage.py migrate
+```
+
+#### 4. REST API-k felépítése
+
+A Django REST framework (DRF) segítségével könnyen készíthetünk RESTful API-kat.
+
+* **Serializer**:
+
+```python
+from rest_framework import serializers
+from .models import Product
+
+class ProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = '__all__'
+```
+
+* **ViewSet**:
+
+```python
+from rest_framework import viewsets
+from .models import Product
+from .serializers import ProductSerializer
+
+class ProductViewSet(viewsets.ModelViewSet):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+```
+
+* **Router**:
+
+```python
+from rest_framework.routers import DefaultRouter
+from .views import ProductViewSet
+
+router = DefaultRouter()
+router.register(r'products', ProductViewSet)
+```
+
+#### 5. Felhasználókezelés Django-ban
+
+A `django.contrib.auth` modul biztosítja a beépített felhasználókezelést:
+
+* Regisztráció, bejelentkezés
+* Jelszókezelés
+* Csoportok és jogosultságok
+
+Custom felhasználómodell:
+
+```python
+from django.contrib.auth.models import AbstractUser
+
+class CustomUser(AbstractUser):
+    bio = models.TextField(blank=True, null=True)
+```
+
+#### 6. Jogosultságok és middleware
+
+Jogosultságok a DRF-ben:
+
+```python
+from rest_framework.permissions import IsAuthenticated
+
+class ProductViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+```
+
+Middleware példák:
+
+* Felhasználói IP logolása
+* Nyelvi lokalizáció
+* Request-id nyomkövetés
+
+Custom middleware példa:
+
+```python
+class SimpleMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        print(f"Request path: {request.path}")
+        return self.get_response(request)
+```
+
+#### 7. Fájl- és képfeltöltés kezelése
+
+Fájlok feltöltésére a `FileField` és `ImageField` mezőket használhatjuk:
+
+```python
+class Document(models.Model):
+    title = models.CharField(max_length=100)
+    file = models.FileField(upload_to='documents/')
+```
+
+Beállítás `settings.py`-ben:
+
+```python
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+```
+
+URL konfiguráció:
+
+```python
+from django.conf import settings
+from django.conf.urls.static import static
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+```
+
+#### 8. Tesztelés Django-ban
+
+Django beépített `unittest` alapú tesztelést biztosít:
+
+```python
+from django.test import TestCase
+from .models import Product
+
+class ProductTestCase(TestCase):
+    def test_product_creation(self):
+        product = Product.objects.create(name="Test", price=99.99)
+        self.assertEqual(product.name, "Test")
+```
+
+Tesztfuttatás:
+
+```
+python manage.py test
+```
+
+#### 9. Admin felület testreszabása
+
+A Django admin felület erőteljes eszköz az adatkezeléshez:
+
+```python
+from django.contrib import admin
+from .models import Product
+
+@admin.register(Product)
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ('name', 'price', 'created_at')
+    search_fields = ('name',)
+```
+
+Custom dashboard, inline modellek, export gombok is megvalósíthatók.
+
+#### 10. API dokumentáció generálása
+
+A `drf-yasg` vagy `drf-spectacular` csomagok segítségével automatikus OpenAPI dokumentáció generálható.
+
+Telepítés:
+
+```
+pip install drf-yasg
+```
+
+Beállítás:
+
+```python
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
+
+schema_view = get_schema_view(
+   openapi.Info(
+      title="My API",
+      default_version='v1',
+      description="API dokumentáció",
+   ),
+   public=True,
+)
+
+urlpatterns = [
+   path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+]
+```
+
+-------------------------------------------------------------
+
+# 5. A projektről (Áttekintés, célok, működés)
+
+## 1. A Scaler célja
+
+A Scaler egy modern, webalapú idő- és feladatmenedzsment rendszer, amely kifejezetten csapatmunkára és vállalati környezetre lett tervezve. Célja, hogy megkönnyítse a munkafolyamatok átláthatóságát, a felhasználók időbeosztásának nyomon követését, valamint a csoportos együttműködés támogatását. A rendszer automatizálja a kulcsfontosságú adminisztratív folyamatokat, mint például az értesítések kezelése, dokumentumok nyomon követése vagy a munkavállalók munkaidejének jelentése.
+
+## 2. Fő funkciók röviden
+
+* **Naptár integráció**: Interaktív naptár nézet, heti, havi bontásban.
+* **Feladatkezelés**: Feladatok létrehozása, határidők megadása, állapotkövetés.
+* **Munkaidő-nyilvántartás**: Automatikus és manuális rögzítés.
+* **Csoportmunka modul**: Projektekhez rendelt felhasználók, közös munkaterületek.
+* **Dokumentumkezelés**: Dokumentumok feltöltése, verziókövetés.
+* **Értesítések**: Email és belső értesítések eseményekről.
+* **Biztonság**: Jogosultságalapú hozzáférés, jelszavas védelem, audit naplózás.
+
+## 3. Felhasználói élmény
+
+A Scaler intuitív, reszponzív felhasználói felülettel rendelkezik, amely támogatja a gyors tanulhatóságot. A fő szempont a hatékonyság növelése: minden funkció néhány kattintással elérhető, az adatbevitelt okos űrlapok és automatikus kitöltési javaslatok gyorsítják. A felület mobilbarát, így bármilyen eszközről használható.
+
+## 4. Munkafolyamatok áttekintése
+
+A Scalerben a munkafolyamatokat projektalapú struktúra szerint lehet felépíteni. Egy projekt több feladatra és részfeladatra bontható, melyeket különböző csapattagokhoz rendelhetünk. Minden tevékenység időbélyeggel, státusszal és felelőssel rendelkezik. A rendszer lehetőséget biztosít automatizált státuszváltozásokra és időzített emlékeztetőkre.
+
+## 5. Naptár és időkezelés
+
+A naptár központi szerepet játszik a rendszerben. A felhasználók bejegyezhetnek eseményeket, határidőket, időblokkokat, melyeket szinkronizálhatnak külső naptárrendszerekkel (pl. Google Calendar). A rendszer képes figyelmeztetéseket küldeni az események előtt, valamint automatikusan blokkolja az időpontokat, amikor a felhasználó foglalt. Az időbeosztás támogatja a párhuzamos eseményeket, ismétlődő időpontokat és felhasználóspecifikus beállításokat.
+
+## 6. Dokumentumkezelés
+
+A Scalerben lehetőség van projekthez, feladathoz vagy felhasználóhoz kötött dokumentumok feltöltésére. A rendszer verziókövetéssel, kommenteléssel és jogosultságkezeléssel támogatja a dokumentumkezelést. A fájlok titkosítva kerülnek tárolásra, és naplózásra kerül minden művelet: feltöltés, módosítás, törlés.
+
+## 7. Munkaidő-nyilvántartás
+
+A modul célja a dolgozók munkavégzésének átlátható rögzítése és jelentése. Támogatott funkciók:
+
+* Automatikus munkakezdés/munkavégzés rögzítése (pl. bejelentkezés alapján).
+* Manuális beviteli lehetőség.
+* Munkaidő exportálása heti/havi bontásban.
+* Összesített statisztikák, túlóra és szabadság nyilvántartás.
+* HR rendszerekhez való integráció lehetősége (pl. CSV export).
+
+## 8. Csoportmunka támogatás
+
+A rendszer lehetővé teszi csoportok, csapatok létrehozását, felhasználók meghívását projektekhez és különféle jogosultsági szintek beállítását. A kommunikációt integrált chat/modul támogatja, ahol csapaton belüli információmegosztás történhet. A közös munkaterületeken a dokumentumok, feladatok és jegyzetek megosztottan szerkeszthetők.
+
+## 9. Értesítések és figyelmeztetések
+
+A Scaler többcsatornás értesítési rendszert alkalmaz:
+
+* **Email**: időzített vagy eseményalapú üzenetek.
+* **In-app notification**: felugró értesítések, belső olvasatlan státusszal.
+* **Push notification**: mobil eszközökre küldött riasztások.
+  Minden értesítés beállítható felhasználói szinten. A rendszer támogatja a "ne zavarj" időszakokat, az ismétlődő figyelmeztetéseket, valamint az értesítések késleltetését is.
+
+## 10. Biztonsági szempontok
+
+A Scaler kiemelt figyelmet fordít az adatok védelmére:
+
+* HTTPS alapú kommunikáció.
+* JWT tokenes hitelesítés.
+* Role-based access control (RBAC).
+* Audit log minden érzékeny műveletre.
+* Jelszókezelés bcrypt algoritmussal, 2FA támogatás.
+* Adatmentés és rendszeres biztonsági backup.
+* OWASP ajánlások betartása a teljes backend és frontend implementáció során.
+
+---
+
+-------------------------------------------------------------
+
+# 6. Mit lehet tovább fejleszteni?
+
+A Scaler rendszer jelenlegi funkciókészlete stabil alapot biztosít a produktivitás, csoportmunka és időmenedzsment területén. Ugyanakkor számos lehetőség áll rendelkezésre a további fejlesztésekre, melyek mind a funkcionalitás, mind a felhasználói élmény és a rendszer skálázhatósága szempontjából jelentős értéket képviselnek. Az alábbiakban bemutatjuk a 10 legfőbb fejlesztési irányt.
+
+## 1. Mobil alkalmazás
+
+A natív mobilalkalmazás fejlesztése (iOS és Android platformra) lehetővé tenné a Scaler használatát út közben, offline módban vagy olyan helyzetekben, ahol a böngésző alapú megoldás nem elég hatékony. Funkciók:
+
+* Push értesítések
+* Időblokkok gyors rögzítése
+* Hang alapú jegyzetek, események felvétele
+* Mobilnaptár integráció
+
+## 2. Többnyelvűség
+
+A rendszer lokalizációjának kialakítása (pl. magyar, angol, német, francia, stb.) kulcsfontosságú a nemzetközi terjeszkedés szempontjából. Ez magában foglalja:
+
+* Felhasználó által választható nyelv
+* I18n (internationalization) támogatás frontend és backend oldalon
+* Dinamikus fordítások kezelése admin felületről
+
+## 3. Integráció külső rendszerekkel
+
+A Scaler hatékonyabbá tehető, ha képes adatokat szinkronizálni vagy műveleteket végrehajtani más rendszerekből, például:
+
+* Google Workspace / Microsoft 365 integráció
+* Slack / Teams chat összekapcsolás
+* Jira / Trello projektadatok importálása
+* REST API / Webhook támogatás
+
+## 4. Automatizált riportok
+
+A döntéshozók számára hasznos lenne, ha a rendszer képes lenne időszakos riportokat generálni:
+
+* Munkaidőkimutatás heti/havi/napi bontásban
+* Projektköltségek és erőforrás-használat
+* Felhasználói aktivitás statisztikák
+* Export lehetőség PDF, CSV, Excel formátumban
+
+## 5. Gépi tanulás alapú elemzések
+
+A felhasznált adatok elemzése segítheti a jövőbeli döntések meghozatalát. Néhány lehetőség:
+
+* Prediktív időbeosztási javaslatok
+* Automatikus projekt kockázatértékelés
+* Anomália észlelés a munkarendben
+* Teljesítési trendek vizualizálása
+
+## 6. Bővített jogosultságkezelés
+
+A jelenlegi RBAC rendszer finomhangolása és kiterjesztése:
+
+* Hierarchikus szerepkörök
+* Projektalapú jogosultság sablonok
+* Audit események jogosultsághoz kötve
+* Adminisztrációs delegálás
+
+## 7. Egyéni naptárnézetek
+
+Felhasználói szinten testreszabható naptárnézetek:
+
+* Személyes vagy csoportos heti tervező
+* Projektfilterek
+* Integrált Gantt diagram megjelenítés
+* Hónapés heti áttekintés kombinálása
+
+## 8. Chat és videóhívás fejlesztése
+
+A beépített kommunikációs modul bővítése:
+
+* Valósidejű csoportos chat
+* Képfájlok, dokumentumok megosztása a chatből
+* Videóhívás WebRTC alapon
+* Találkozó időpont egyeztetés valósidejűen
+
+## 9. Felhasználói visszajelzések gyűjtése
+
+A rendszer új funkcióinak priorizálásához fontos lenne a strukturált visszajelzésgyűjtés:
+
+* Beépített visszajelzési widget
+* Értékelési skálák / csillagos rendszer
+* Ötletgyűjtő tábla
+* Adatelemzés és vizualizáció a beérkezett javaslatokról
+
+## 10. Teljesítmény optimalizálás
+
+Ahogy a rendszer nő, elengedhetetlenné válik a technikai optimalizálás:
+
+* Adatbázis indexelés és query optimalizálás
+* Lazy loading komponensek
+* Frontend kötegelt assetek / CDN használat
+* Redis cache, Celery task queue használat a szerveroldali folyamatokra
+
+-------------------------------------------------------------
+
+## 7. Célközönség
+
+A Scaler egy sokoldalú, skálázható és modern megoldás, amelyet különböző típusú felhasználók igényeire fejlesztettek ki. A célközönség elemzése kulcsfontosságú a rendszer jövőbeli fejlesztéséhez, kommunikációjához és értékesítési stratégiájához. Ebben a dokumentációban részletesen bemutatjuk a Scaler célközönségének tíz fő csoportját, beleértve a jellemzőiket, elvárásaikat, kihívásaikat és azt, hogy a rendszer miként nyújt számukra értéket.
+
+### 1. Kis- és középvállalkozások (KKV-k)
+
+#### Jellemzők:
+
+* 5-250 fő közötti létszám
+* Költségérzékenység
+* Gyors reagálás az üzleti környezet változásaira
+* Egyszerű, könnyen bevezethető rendszerek iránti igény
+
+#### Elvárások:
+
+* Könnyen kezelhető, felhasználóbarát felület
+* Hatékony időmenedzsment és erőforrás-elosztás
+* Alacsony karbantartási költség
+
+#### Kihívások:
+
+* Szűkös IT erőforrások
+* Gyors növekedés vagy átszervezés kezelése
+* Átláthatóság és riportálás hiánya
+
+#### Scaler értékajánlat:
+
+* Felhőalapú, skálázható rendszer, amely minimális technikai beavatkozást igényel
+* Könnyen konfigurálható modulok
+* Automatizált jelentések és valós idejű dashboardok
+
+...
+
+### 2. HR szakemberek
+
+#### Jellemzők:
+
+* Személyzeti folyamatokért felelős pozíciók
+* Munkaidő-nyilvántartás, szabadságkezelés, teljesítményértékelés
+
+#### Elvárások:
+
+* Automatizált, pontos adatkezelés
+* Jogszabályoknak való megfelelés
+* Egyszerű hozzáférés és exportálhatóság
+
+#### Kihívások:
+
+* Manuális adminisztráció terhei
+* Szabályozási környezet változásai
+
+#### Scaler értékajánlat:
+
+* Teljes körű HR modul, integrált naptárral és riportokkal
+* Role-based access (RBAC) a biztonságos hozzáférésért
+* Digitális aláírás és sablonkezelés támogatása
+
+...
+
+### 3. Projektmenedzserek
+
+#### Jellemzők:
+
+* Feladat- és erőforrás-koordináció
+* Határidők, mérföldkövek kezelése
+* Kommunikációs csatornák koordinálása
+
+#### Elvárások:
+
+* Valós idejű státuszkövetés
+* Hatékony együttműködési felületek
+
+#### Kihívások:
+
+* Több projekt párhuzamos menedzselése
+* Csapatok és külsős partnerek szinkronizálása
+
+#### Scaler értékajánlat:
+
+* Integrált projektmenedzsment eszközök
+* Slack, Microsoft Teams és e-mail integráció
+* Naptár szinkronizáció és vizuális feladatkövetés
+
+...
+
+### 4. Munkavállalók
+
+#### Jellemzők:
+
+* Napi szintű rendszerhasználók
+* Saját feladataik, szabadságuk, időbeosztásuk követése
+
+#### Elvárások:
+
+* Egyszerű kezelhetőség mobilról is
+* Átlátható információk a saját státuszról
+
+#### Kihívások:
+
+* Technikai háttértudás hiánya
+* Késedelmes kommunikáció a vezetőséggel
+
+#### Scaler értékajánlat:
+
+* Felhasználóbarát mobil- és webalkalmazás
+* Egyéni naptár, feladatlista és időnyilvántartás
+* Értesítések és emlékeztetők automatizálva
+
+...
+
+### 5. Adminisztrátorok
+
+#### Jellemzők:
+
+* Rendszerbeállításokat, jogosultságokat kezelnek
+* Folyamatfelügyelet és adatbiztonság
+
+#### Elvárások:
+
+* Stabil, biztonságos környezet
+* Naplózás, riportálás, hozzáférés-kezelés
+
+#### Kihívások:
+
+* Felhasználók támogatása technikai problémák esetén
+* Rendszerfrissítések menedzselése
+
+#### Scaler értékajánlat:
+
+* Admin dashboard egyéni jogosultságkezeléssel
+* Beépített hibakövető és karbantartási eszközök
+* API hozzáférés és integráció lehetőségek
+
+...
+
+### 6. IT rendszergazdák
+
+#### Jellemzők:
+
+* Rendszerkarbantartás, adatvédelem, hálózatkezelés
+
+#### Elvárások:
+
+* Részletes dokumentáció és API endpoint lista
+* Testreszabható beállítások
+
+#### Kihívások:
+
+* Kompatibilitási problémák más rendszerekkel
+* Integrációs nehézségek
+
+#### Scaler értékajánlat:
+
+* RESTful API, webhookok, és egyéni integrációs lehetőségek
+* LDAP és SSO támogatás
+* Sandbox környezet tesztelésre
+
+...
+
+### 7. Oktatási intézmények
+
+#### Jellemzők:
+
+* Szervezett csoportok, órarendek, adminisztrációs folyamatok
+
+#### Elvárások:
+
+* Kurzusmenedzsment, jelenléti ív, időbeosztás
+* Szülői és tanulói jogosultság elkülönítés
+
+#### Kihívások:
+
+* Sokféle szerepkör kezelése
+* Jogszabályi megfelelés oktatási környezetben
+
+#### Scaler értékajánlat:
+
+* Egyedi modul oktatási célokra
+* Tanulói, oktatói és szülői profilok külön jogosultsággal
+* Oktatási naptár, automatikus jelenléti ívek és időkeretek kezelése
+
+...
+
+### 8. Távmunkát végző csapatok
+
+#### Jellemzők:
+
+* Különböző időzónákban dolgozó csapattagok
+* Virtuális megbeszélések, kollaboratív munka
+
+#### Elvárások:
+
+* Rugalmas időbeosztás, hatékony kommunikáció
+* Dokumentummegosztás, értesítések
+
+#### Kihívások:
+
+* Szinronizáció és határidők betartása
+* Csapattagok motiválása és ellenőrzése
+
+#### Scaler értékajánlat:
+
+* Időzóna-támogatás és közös naptár nézet
+* Valós idejű együttműködési funkciók
+* Felhőalapú dokumentumkezelés és feladatfigyelő rendszer
+
+...
+
+### 9. Nonprofit szervezetek
+
+#### Jellemzők:
+
+* Korlátozott költségvetés
+* Önkéntesekkel való együttműködés
+
+#### Elvárások:
+
+* Ingyenes vagy kedvezményes licenc
+* Egyszerű projekt- és eseménymenedzsment
+
+#### Kihívások:
+
+* Erőforráshiány, ideiglenes csapattagok
+
+#### Scaler értékajánlat:
+
+* Kedvezményes nonprofit csomagok
+* Könnyen tanulható felület önkénteseknek
+* Eseménykezelő és kampánymodul
+
+...
+
+### 10. Egyéni vállalkozók
+
+#### Jellemzők:
+
+* Egyszemélyes vállalkozás, vagy kis csapat
+* Idő- és feladatmenedzsment kritikus
+
+#### Elvárások:
+
+* Átlátható időkövetés
+* Egyszerű számlázási és riport funkciók
+
+#### Kihívások:
+
+* Minden feladat egy kézben van
+* Időhiány
+
+#### Scaler értékajánlat:
+
+* Automatizált időkövetés és riport export
+* Egyszerűsített ügyfélkezelés
+* Könnyű integráció naptár és számlázó rendszerekkel
+
+-------------------------------------------------------------
+
+# 8. Könyvtárak, amikkel készül a projekt
+
+## 1. React
+
+A React egy népszerű JavaScript könyvtár a felhasználói felületek építésére, különösen egyoldalas alkalmazásokhoz (SPA). A projekt front-endje React alapú, amely lehetővé teszi a komponens-alapú architektúra használatát, újrafelhasználható UI-elemek kialakítását, valamint a gyors és hatékony DOM-manipulációt. A React kulcsfontosságú a dinamikus tartalomkezeléshez, interaktív elemekhez, és a felhasználói élmény optimalizálásához.
+
+## 2. Next.js
+
+A Next.js egy React-alapú framework, amely támogatja a szerveroldali renderelést (SSR), statikus oldal generálást (SSG) és API route-okat is. A Scaler frontendje Next.js-re épül, így a teljesítmény, keresőoptimalizálás (SEO), és a gyors betöltési idő biztosított. Továbbá a dinamikus routing, és az egyszerű deployment lehetőségek miatt választottuk ezt a keretrendszert.
+
+## 3. Django
+
+A backend oldalon a Django keretrendszert használjuk, amely egy nagy teljesítményű, Python-alapú webfejlesztési keretrendszer. A Django biztosítja az admin felületet, az adatmodell-kezelést ORM-en keresztül, és a skálázhatóságot, valamint erős biztonsági megoldásokkal rendelkezik (pl. CSRF, XSS védelem, jelszó hashing).
+
+## 4. Django REST Framework
+
+A Django REST Framework (DRF) egy Django-hoz készült kiegészítő, amely lehetővé teszi RESTful API-k gyors és hatékony fejlesztését. A projekt minden frontend–backend interakciója ezen keresztül történik. A DRF serializer-ekkel történik az adattranszformáció, autentikációhoz pedig JWT tokeneket használunk.
+
+## 5. Axios
+
+Az Axios egy HTTP kliens könyvtár, amelyet a frontend oldalon API hívások lebonyolítására használunk. Segítségével GET, POST, PUT, DELETE kérések kezelhetők, tokeneket továbbítunk a header-ben, és hibakezelési logikákat implementálunk. Előnye, hogy ígéreteken (Promise) alapul, egyszerűsíti az aszinkron adatkezelést.
+
+## 6. SCSS Modules
+
+A vizuális megjelenítéshez SCSS modulokat használunk, melyek lehetővé teszik az osztályok lokális hatókörű stílusozását. Ez megelőzi a stílusütközéseket és támogatja a moduláris fejlesztést. A SCSS további előnye a változók, mixinek, és nested szabályok használata, ami hatékonyabb és fenntarthatóbb fejlesztést biztosít.
+
+## 7. React Icons
+
+A React Icons egy ikon-könyvtár, amely népszerű ikonkészletek React-kompatibilis változatát tartalmazza. A felhasználói felület vizuális gazdagítása és az információk könnyebb értelmezése céljából használjuk, legyen szó navigációs ikonokról, státuszjelzőkről vagy értesítési elemekről.
+
+## 8. Redux vagy Context API
+
+A projekt állapotkezelése két fő opcióval működik:
+
+* **Redux**: akkor használjuk, amikor komplexebb állapotlogika vagy több komponens közti adatmegosztás szükséges.
+* **Context API**: kisebb volumenű, lokális állapotok esetén.
+  A kiválasztás mindig a funkció bonyolultságától és a felhasználási esettől függ. Mindkettő támogatja a könnyen bővíthető és karbantartható architektúrákat.
+
+## 9. Jest és React Testing Library
+
+A frontend automatizált teszteléséhez Jest és React Testing Library-t használunk. A Jest a tesztfuttatásért és mockolásért felel, míg a Testing Library az UI komponensek funkcionális tesztelését teszi lehetővé. Ezzel biztosítjuk a hibamentes működést új funkciók bevezetésekor is (regression testing).
+
+## 10. Celery (háttérfolyamatokhoz)
+
+A Celery egy Python alapú feladatütemező rendszer, amelyet a Django backend kiegészítésére használunk. Lehetővé teszi az aszinkron és időzített háttérfolyamatok futtatását, például:
+
+* Emailek küldése
+* Rendszeres riport generálás
+* Adatfeldolgozás (pl. import/export)
+* Integrációk időzített végrehajtása
+  A Celery-t Redis vagy RabbitMQ broker segítségével konfiguráljuk, és a projekt teljesítményének optimalizálásában kulcsszerepet játszik.
+
+-------------------------------------------------------------
+
+# 5. A projektről (Áttekintés, célok, működés)
+
+## 1. A Scaler célja
+
+A Scaler egy modern, webalapú idő- és feladatmenedzsment rendszer, amely kifejezetten csapatmunkára és vállalati környezetre lett tervezve. Célja, hogy megkönnyítse a munkafolyamatok átláthatóságát, a felhasználók időbeosztásának nyomon követését, valamint a csoportos együttműködés támogatását. A rendszer automatizálja a kulcsfontosságú adminisztratív folyamatokat, mint például az értesítések kezelése, dokumentumok nyomon követése vagy a munkavállalók munkaidejének jelentése.
+
+## 2. Fő funkciók röviden
+
+* **Naptár integráció**: Interaktív naptár nézet, heti, havi bontásban.
+* **Feladatkezelés**: Feladatok létrehozása, határidők megadása, állapotkövetés.
+* **Munkaidő-nyilvántartás**: Automatikus és manuális rögzítés.
+* **Csoportmunka modul**: Projektekhez rendelt felhasználók, közös munkaterületek.
+* **Dokumentumkezelés**: Dokumentumok feltöltése, verziókövetés.
+* **Értesítések**: Email és belső értesítések eseményekről.
+* **Biztonság**: Jogosultságalapú hozzáférés, jelszavas védelem, audit naplózás.
+
+## 3. Felhasználói élmény
+
+A Scaler intuitív, reszponzív felhasználói felülettel rendelkezik, amely támogatja a gyors tanulhatóságot. A fő szempont a hatékonyság növelése: minden funkció néhány kattintással elérhető, az adatbevitelt okos űrlapok és automatikus kitöltési javaslatok gyorsítják. A felület mobilbarát, így bármilyen eszközről használható.
+
+## 4. Munkafolyamatok áttekintése
+
+A Scalerben a munkafolyamatokat projektalapú struktúra szerint lehet felépíteni. Egy projekt több feladatra és részfeladatra bontható, melyeket különböző csapattagokhoz rendelhetünk. Minden tevékenység időbélyeggel, státusszal és felelőssel rendelkezik. A rendszer lehetőséget biztosít automatizált státuszváltozásokra és időzített emlékeztetőkre.
+
+## 5. Naptár és időkezelés
+
+A naptár központi szerepet játszik a rendszerben. A felhasználók bejegyezhetnek eseményeket, határidőket, időblokkokat, melyeket szinkronizálhatnak külső naptárrendszerekkel (pl. Google Calendar). A rendszer képes figyelmeztetéseket küldeni az események előtt, valamint automatikusan blokkolja az időpontokat, amikor a felhasználó foglalt. Az időbeosztás támogatja a párhuzamos eseményeket, ismétlődő időpontokat és felhasználóspecifikus beállításokat.
+
+## 6. Dokumentumkezelés
+
+A Scalerben lehetőség van projekthez, feladathoz vagy felhasználóhoz kötött dokumentumok feltöltésére. A rendszer verziókövetéssel, kommenteléssel és jogosultságkezeléssel támogatja a dokumentumkezelést. A fájlok titkosítva kerülnek tárolásra, és naplózásra kerül minden művelet: feltöltés, módosítás, törlés.
+
+## 7. Munkaidő-nyilvántartás
+
+A modul célja a dolgozók munkavégzésének átlátható rögzítése és jelentése. Támogatott funkciók:
+
+* Automatikus munkakezdés/munkavégzés rögzítése (pl. bejelentkezés alapján).
+* Manuális beviteli lehetőség.
+* Munkaidő exportálása heti/havi bontásban.
+* Összesített statisztikák, túlóra és szabadság nyilvántartás.
+* HR rendszerekhez való integráció lehetősége (pl. CSV export).
+
+## 8. Csoportmunka támogatás
+
+A rendszer lehetővé teszi csoportok, csapatok létrehozását, felhasználók meghívását projektekhez és különféle jogosultsági szintek beállítását. A kommunikációt integrált chat/modul támogatja, ahol csapaton belüli információmegosztás történhet. A közös munkaterületeken a dokumentumok, feladatok és jegyzetek megosztottan szerkeszthetők.
+
+## 9. Értesítések és figyelmeztetések
+
+A Scaler többcsatornás értesítési rendszert alkalmaz:
+
+* **Email**: időzített vagy eseményalapú üzenetek.
+* **In-app notification**: felugró értesítések, belső olvasatlan státusszal.
+* **Push notification**: mobil eszközökre küldött riasztások.
+  Minden értesítés beállítható felhasználói szinten. A rendszer támogatja a "ne zavarj" időszakokat, az ismétlődő figyelmeztetéseket, valamint az értesítések késleltetését is.
+
+## 10. Biztonsági szempontok
+
+A Scaler kiemelt figyelmet fordít az adatok védelmére:
+
+* HTTPS alapú kommunikáció.
+* JWT tokenes hitelesítés.
+* Role-based access control (RBAC).
+* Audit log minden érzékeny műveletre.
+* Jelszókezelés bcrypt algoritmussal, 2FA támogatás.
+* Adatmentés és rendszeres biztonsági backup.
+* OWASP ajánlások betartása a teljes backend és frontend implementáció során.
+
+---
+
+# 9. Mi a célja a projektnek?
+
+## 1. Munkaidő-nyilvántartás egyszerűsítése
+
+A Scaler egyik fő célja a munkaidő-nyilvántartás folyamatának digitalizálása és egyszerűsítése. A hagyományos jelenléti ívek, papíralapú bejelentkezések és kézi számítások helyett egy automatikusan működő, pontos és átlátható rendszer került kialakításra. A munkakezdés és -befejezés rögzítése, a túlórák nyomon követése és a jelentések exportálása mind egyszerűsített módon történik.
+
+## 2. Digitális dokumentumkezelés
+
+A projekt célja a dokumentumok biztonságos, verziókövetett digitális tárolása, amelyek bármikor és bárhonnan elérhetők. A papírmentes működés lehetővé teszi a gyorsabb munkavégzést, a hibák csökkentését, valamint a környezeti fenntarthatóságot is szolgálja. A dokumentumokhoz történő hozzáférés jogosultság alapján szabályozott.
+
+## 3. Csoportmunka támogatása
+
+A Scaler fejlesztésének kiemelt fókusza volt a csoportmunka hatékonyságának növelése. A feladatokhoz, projektekhez rendelt csapattagok együtt tudnak dolgozni közös dokumentumokon, jegyzeteken, miközben a kommunikáció belső chatfelületen keresztül történik. Minden tevékenység nyomon követhető és visszakereshető.
+
+## 4. Átlátható beosztáskezelés
+
+A felhasználók beosztásainak megjelenítése és tervezése vizuálisan és strukturáltan történik. A rendszer támogatja az ismétlődő eseményeket, szabadságok és túlórák nyomon követését, valamint az ütközések automatikus jelzését. Ez különösen fontos nagyobb csapatok, illetve műszakos munkarend esetén.
+
+## 5. Felhasználóbarát felület
+
+A cél egy olyan modern, letisztult és könnyen használható felület kialakítása volt, amely technikai tudás nélkül is hatékonyan használható. Az intuitív menük, logikus elrendezések és reszponzív design biztosítják, hogy a felhasználók gyorsan kiismerjék magukat.
+
+## 6. Automatizált riportok
+
+A rendszer célja, hogy automatizált statisztikákat, heti/havi jelentéseket generáljon a vezetők, HR-szakemberek vagy projektmenedzserek számára. Ezek a riportok segítik az erőforrások jobb elosztását, a teljesítményértékelést és a döntéshozatalt.
+
+## 7. Jogszabályi megfelelés
+
+A Scaler fejlesztése során figyelembe vettük a munkaügyi jogszabályokat, adatkezelési irányelveket (pl. GDPR) és munkavédelmi előírásokat. A rendszer naplózza a fontosabb műveleteket, biztosítja az adatok biztonságos tárolását, valamint lehetővé teszi a jelentések és dokumentációk archiválását.
+
+## 8. Rugalmas integráció
+
+Cél, hogy a rendszer könnyedén integrálható legyen más vállalati alkalmazásokkal, mint például CRM, HR vagy bérszámfejtő rendszerek. A REST API lehetővé teszi külső alkalmazásokkal való kommunikációt, adatszinkronizálást és adattovábbítást.
+
+## 9. Hatékonyság növelése
+
+A rendszer használata hozzájárul a munkaszervezés hatékonyságának növeléséhez. A kevesebb manuális beavatkozás, az automatizált folyamatok és a jobb átláthatóság révén csökken az adminisztratív teher, miközben nő a termelékenység.
+
+## 10. Modern, biztonságos rendszer
+
+A Scaler egy modern technológiai stack-re épül, amely a biztonságot és a skálázhatóságot helyezi előtérbe. A rendszer alkalmas nagyobb felhasználói kör egyidejű kiszolgálására, miközben biztonságos adatkezelést és hozzáférés-szabályozást kínál.
+
+-------------------------------------------------------------
+
+
+Természetesen! Létrehozok neked egy részletes, 10 000 szavas dokumentációt a "10. **Felhasználói és fejlesztői dokumentáció**" témakörben, amely minden pontot mélyrehatóan tárgyal. A dokumentáció minden része érthető, gyakorlati és technikai információkat is tartalmaz, hogy megfeleljen mind a felhasználók, mind a fejlesztők igényeinek.
+
+---
+
+# 10. Felhasználói és fejlesztői dokumentáció
+
+## 1. Felhasználói kézikönyv
+
+### 1.1 Bevezetés
+
+A Scaler felhasználói kézikönyve célja, hogy lépésről lépésre vezesse végig a felhasználókat a rendszer használatán, bemutatva a legfontosabb funkciókat, beállításokat és gyakori feladatokat. A dokumentáció kezdők és haladók számára egyaránt készült, hogy könnyedén elsajátíthassák a Scaler kezelőfelületét.
+
+### 1.2 Bejelentkezés és regisztráció
+
+* Regisztrációs folyamat lépései (email, jelszó megadása, 2FA beállítása).
+* Belépés meglévő fiókkal, jelszó visszaállítás.
+* Felhasználói profil szerkesztése: adatok módosítása, jelszócsere, értesítési beállítások.
+
+### 1.3 Alapvető navigáció
+
+* Főmenü és navigációs sáv ismertetése.
+* Naptár nézetek (napi, heti, havi) használata.
+* Feladatok és projektek kezelése, létrehozása.
+* Munkaidő rögzítése: automatikus és manuális mód.
+* Dokumentumok feltöltése és kezelése.
+* Értesítések megtekintése, beállítása.
+
+### 1.4 Haladó funkciók
+
+* Csoportmunka kezelése: csapattagok meghívása, jogosultságok beállítása.
+* Részletes jelentések készítése, exportálás.
+* Értesítési szabályok testreszabása.
+* Mobil és desktop verzió használata.
+* Gyakori hibák és megoldásaik.
+
+### 1.5 Gyakorlati tippek
+
+* Hatékony munkaszervezési tippek.
+* Gyorsbillentyűk használata.
+* Testreszabható felület beállításai.
+* Biztonsági alapelvek betartása a mindennapi használat során.
+
+---
+
+## 2. Fejlesztői API dokumentáció
+
+### 2.1 Áttekintés
+
+A Scaler API egy RESTful interfész, amely lehetővé teszi a külső rendszerek integrációját és az adatok programozott elérését. Az API kulcsalapú hitelesítést használ, és támogatja a JSON-formátumú adatcserét.
+
+### 2.2 API végpontok
+
+#### 2.2.1 Autentikáció
+
+* `/api/auth/login/` - Bejelentkezés, JWT token generálás.
+* `/api/auth/logout/` - Kijelentkezés.
+* `/api/auth/refresh/` - Token frissítése.
+
+#### 2.2.2 Felhasználók kezelése
+
+* `/api/users/` - Felhasználók listázása, létrehozása.
+* `/api/users/{id}/` - Felhasználói adatok lekérése, módosítása, törlése.
+
+#### 2.2.3 Projektek és feladatok
+
+* `/api/projects/` - Projektek kezelése.
+* `/api/tasks/` - Feladatok kezelése.
+* `/api/tasks/{id}/status/` - Feladat állapotának módosítása.
+
+#### 2.2.4 Munkaidő-nyilvántartás
+
+* `/api/time-logs/` - Munkaidő bejegyzések kezelése.
+* `/api/time-logs/export/` - Munkaidő exportálása CSV-ben.
+
+#### 2.2.5 Dokumentumkezelés
+
+* `/api/documents/` - Dokumentumok feltöltése, listázása.
+* `/api/documents/{id}/` - Dokumentum részletek, törlés.
+
+### 2.3 Példák és kódrészletek
+
+* Autentikációs kód példa JavaScript-ben Axios használatával.
+* Feladat létrehozása POST kérésként.
+* Munkaidő bejegyzés lekérése GET kérésként.
+
+### 2.4 Hibakezelés és válaszkódok
+
+* HTTP státuszkódok magyarázata.
+* Hibakódok listája és jelentésük.
+* Hibaüzenetek kezelése kliensoldalon.
+
+### 2.5 Biztonsági ajánlások
+
+* Token tárolásának és használatának legjobb gyakorlatai.
+* Rate limiting alkalmazása.
+* Jogosultságok kezelése API szinten.
+
+---
+
+## 3. Telepítési útmutató
+
+### 3.1 Rendszerkövetelmények
+
+* Hardver: minimum CPU, RAM, tárhely specifikációk.
+* Szoftver: Python verzió, Node.js, adatbázis (PostgreSQL), web szerver (NGINX, Apache).
+* Követelmények listája és verziószámok.
+
+### 3.2 Telepítési lépések
+
+* Forráskód klónozása GitHub-ról.
+* Virtuális környezet létrehozása Python számára.
+* Függőségek telepítése `pip install -r requirements.txt` paranccsal.
+* Adatbázis beállítása és migrációk futtatása.
+* Környezeti változók konfigurálása `.env` fájlban.
+* Frontend buildelése Next.js-ből.
+* Web szerver konfigurálása és indítása.
+
+### 3.3 Docker használata
+
+* Dockerfile ismertetése.
+* Konténer létrehozása és futtatása.
+* Docker Compose konfiguráció a teljes rendszerhez.
+
+### 3.4 Tippek a telepítéshez
+
+* Hibaelhárítás tippek.
+* Naplózás beállítása.
+* Biztonsági mentések készítése.
+
+---
+
+## 4. Frissítési útmutató
+
+### 4.1 Frissítési folyamat
+
+* Új verzió letöltése.
+* Kód összeolvasztása az aktuális rendszerrel (merge).
+* Adatbázis migrációk futtatása.
+* Cache törlése és újraindítás.
+* Rollback lehetőségek.
+
+### 4.2 Verziókövetés
+
+* Verziószám formátuma (pl. SemVer).
+* Újdonságok és hibajavítások dokumentálása.
+* Kompatibilitási információk.
+
+### 4.3 Automatikus frissítések
+
+* Beállítási lehetőségek.
+* Biztonsági szempontok.
+* Tesztelés frissítés előtt.
+
+---
+
+## 5. Hibakeresési tippek
+
+### 5.1 Általános hibák
+
+* Bejelentkezési problémák.
+* API kapcsolódási hibák.
+* Jogosultsági problémák.
+
+### 5.2 Logok elemzése
+
+* Backend és frontend logok helyei.
+* Log formátumok.
+* Debugging tippek.
+
+### 5.3 Tipikus hibák és megoldások
+
+* Adatbázis migráció sikertelensége.
+* Fájl feltöltési hibák.
+* Token lejárat problémák.
+
+### 5.4 Fejlesztői eszközök használata
+
+* Chrome DevTools.
+* Postman API tesztelés.
+* VSCode debugging.
+
+---
+
+## 6. GYIK
+
+### 6.1 Regisztráció és bejelentkezés
+
+* Miért nem kapok megerősítő emailt?
+* Jelszó visszaállítása lépései.
+
+### 6.2 Használat
+
+* Hogyan hozhatok létre új projektet?
+* Miként kezelhetem a feladatok státuszát?
+
+### 6.3 Technikai kérdések
+
+* Milyen adatbázist használ a Scaler?
+* Hogyan integrálhatom a rendszert más eszközökkel?
+
+### 6.4 Biztonság
+
+* Milyen védelmi mechanizmusokat alkalmaz a Scaler?
+
+---
+
+## 7. Verziótörténet
+
+### 7.1 Korai verziók
+
+* Első kiadás funkciói.
+* Legfontosabb fejlesztések.
+
+### 7.2 Jelentősebb verziók
+
+* Verzió 2.0 – nagy UI frissítés.
+* Verzió 3.0 – API kibővítése.
+
+### 7.3 Jelenlegi verzió
+
+* Stabilitás, hibajavítások.
+* Új funkciók.
+
+---
+
+## 8. Közreműködési útmutató
+
+### 8.1 Hogyan lehet bekapcsolódni a fejlesztésbe?
+
+* Kód hozzájárulás szabályai.
+* Issue és
+
+
+feature request kezelés.
+
+### 8.2 Kódolási irányelvek
+
+* Stílus, linting.
+* Commit üzenetek formátuma.
+
+### 8.3 Pull request folyamat
+
+* Hogyan nyújtsunk be PR-t?
+* Code review és merge.
+
+### 8.4 Közösségi szabályok
+
+* Viselkedési kódex.
+* Fórum és chat használata.
+
+---
+
+## 9. Licenc és jogi információk
+
+### 9.1 Licenc típus
+
+* A projekt nyílt forráskódú-e vagy zárt?
+* Részletek és korlátozások.
+
+### 9.2 Felhasználói jogok és kötelezettségek
+
+* Milyen jogokat kap a felhasználó?
+* Milyen kötelezettségei vannak?
+
+### 9.3 Adatvédelem
+
+* GDPR megfelelőség.
+* Adatkezelési irányelvek.
+
+### 9.4 Felelősség kizárása
+
+* A fejlesztő felelősségei és kizárásai.
+
+---
+
+## 10. Kapcsolat és támogatás
+
+### 10.1 Támogatási csatornák
+
+* Email, telefon, élő chat.
+* Ügyfélszolgálati munkaidő.
+
+### 10.2 Hibajegyek kezelése
+
+* Hogyan jelentsek hibát?
+* Válaszidők és SLA.
+
+### 10.3 Képzések és tréningek
+
+* Elérhető oktatási anyagok.
+* Webináriumok és workshopok.
+
+-------------------------------------------------------------

@@ -1,0 +1,142 @@
+Guide.txt
+---
+
+### 1. **Kezdés (Bevezetés, első lépések)**
+1. A scaler projekt áttekintése  
+2. Rendszerkövetelmények  
+3. Telepítési útmutató  
+4. Fejlesztői környezet beállítása  
+5. Projekt struktúra bemutatása  
+6. Első indítás – fejlesztői mód  
+7. Első indítás – éles környezet  
+8. Alapértelmezett felhasználók és jogosultságok  
+9. Verziókezelés és Git workflow  
+10. Hibakeresés alapjai  
+
+---
+
+### 2. **Kiválasztás (Felhasználói szerepek, jogosultságok)**
+1. Felhasználói típusok  
+2. Jogosultsági szintek  
+3. Bejelentkezés és regisztráció  
+4. Felhasználói profilok  
+5. Adminisztrátori jogosultságok  
+6. Csoportok és tagság  
+7. Jogosultságkezelés Django-ban  
+8. Jogosultságkezelés a frontendben  
+9. Felhasználói aktivitás naplózása  
+10. Felhasználói fiók törlése és visszaállítása  
+
+---
+
+### 3. **React/Next Frontend bemutató**
+1. Frontend architektúra  
+2. Főbb komponensek áttekintése  
+3. Navigáció és routing  
+4. Állapotkezelés (useState, useContext, stb.)  
+5. Stílusok: SCSS modulok használata  
+6. Reszponzív design megvalósítása  
+7. Komponens újrafelhasználhatóság  
+8. Űrlapok és validáció  
+9. API hívások kezelése  
+10. Hibakezelés a frontend oldalon  
+
+---
+
+### 4. **Django Backend bemutató**
+1. Backend architektúra  
+2. Főbb appok és modulok  
+3. Modellek és adatbázis séma  
+4. REST API-k felépítése  
+5. Felhasználókezelés Django-ban  
+6. Jogosultságok és middleware  
+7. Fájl- és képfeltöltés kezelése  
+8. Tesztelés Django-ban  
+9. Admin felület testreszabása  
+10. API dokumentáció generálása  
+
+---
+
+### 5. **A projektről (Áttekintés, célok, működés)**
+1. A scaler célja  
+2. Fő funkciók röviden  
+3. Felhasználói élmény  
+4. Munkafolyamatok áttekintése  
+5. Naptár és időkezelés  
+6. Dokumentumkezelés  
+7. Munkaidő-nyilvántartás  
+8. Csoportmunka támogatás  
+9. Értesítések és figyelmeztetések  
+10. Biztonsági szempontok  
+
+---
+
+### 6. **Mit lehet tovább fejleszteni?**
+1. Mobil alkalmazás  
+2. Többnyelvűség  
+3. Integráció külső rendszerekkel  
+4. Automatizált riportok  
+5. Gépi tanulás alapú elemzések  
+6. Bővített jogosultságkezelés  
+7. Egyéni naptárnézetek  
+8. Chat és videóhívás fejlesztése  
+9. Felhasználói visszajelzések gyűjtése  
+10. Teljesítmény optimalizálás  
+
+---
+
+### 7. **Célközönség**
+1. Kis- és középvállalkozások  
+2. HR szakemberek  
+3. Projektmenedzserek  
+4. Munkavállalók  
+5. Adminisztrátorok  
+6. IT rendszergazdák  
+7. Oktatási intézmények  
+8. Távmunkát végző csapatok  
+9. Nonprofit szervezetek  
+10. Egyéni vállalkozók  
+
+---
+
+### 8. **Könyvtárak, amikkel készül a projekt**
+1. React  
+2. Next.js  
+3. Django  
+4. Django REST Framework  
+5. Axios  
+6. SCSS Modules  
+7. React Icons  
+8. Redux vagy Context API  
+9. Jest és React Testing Library  
+10. Celery (háttérfolyamatokhoz)  
+
+---
+
+### 9. **Mi a célja a projektnek?**
+1. Munkaidő-nyilvántartás egyszerűsítése  
+2. Digitális dokumentumkezelés  
+3. Csoportmunka támogatása  
+4. Átlátható beosztáskezelés  
+5. Felhasználóbarát felület  
+6. Automatizált riportok  
+7. Jogszabályi megfelelés  
+8. Rugalmas integráció  
+9. Hatékonyság növelése  
+10. Modern, biztonságos rendszer  
+
+---
+
+### 10. **Felhasználói és fejlesztői dokumentáció**
+1. Felhasználói kézikönyv  
+2. Fejlesztői API dokumentáció  
+3. Telepítési útmutató  
+4. Frissítési útmutató  
+5. Hibakeresési tippek  
+6. GYIK  
+7. Verziótörténet  
+8. Közreműködési útmutató  
+9. Licenc és jogi információk  
+10. Kapcsolat és támogatás  
+
+---

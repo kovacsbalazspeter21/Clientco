@@ -1,0 +1,51 @@
+{
+  "title": "Bevezetés a JavaScript világába",
+  "chapters": [
+    {
+      "title": "1. fejezet: A JavaScript alapjai",
+      "pages": [
+        {
+          "number": 1,
+          "title": "Mi a JavaScript?",
+          "content": "A JavaScript egy magas szintű, dinamikus programozási nyelv, amelyet elsősorban webes fejlesztésre használnak.",
+          "summary": "Ismertetjük a JavaScript alapvető jellemzőit és szerepét a webes fejlesztésben."
+        },
+        {
+          "number": 2,
+          "title": "JavaScript története",
+          "content": "A JavaScriptet 1995-ben fejlesztette ki Brendan Eich, és azóta a web egyik alapvető technológiájává vált.",
+          "summary": "Áttekintjük a JavaScript fejlődését és történelmi mérföldköveit."
+        },
+        {
+          "number": 3,
+          "title": "JavaScript beágyazása a HTML-be",
+          "content": "A <script> elem segítségével JavaScript kódot ágyazhatunk a HTML dokumentumokba.",
+          "summary": "Megtanuljuk, hogyan integrálhatjuk a JavaScriptet a HTML oldalakba."
+        }
+      ]
+    },
+    {
+      "title": "2. fejezet: Alapvető szintaxis és változók",
+      "pages": [
+        {
+          "number": 4,
+          "title": "Változók és típusok",
+          "content": "A JavaScript többféle változótípust is támogat, beleértve a szövegeket, számokat és logikai értékeket.",
+          "summary": "Ismerkedés a JavaScript változókkal és adattípusokkal."
+        },
+        {
+          "number": 5,
+          "title": "Operátorok és kifejezések",
+          "content": "Az operátorok segítségével különböző műveleteket hajthatunk végre a változókon.",
+          "summary": "Felfedezzük a JavaScript operátorait és kifejezéseit."
+        },
+        {
+          "number": 6,
+          "title": "Feltételes szerkezetek",
+          "content": "A feltételes szerkezetek, mint az if-else, lehetővé teszik a döntéshozatalt a kód futása közben.",
+          "summary": "Megtanuljuk, hogyan használjuk a feltételes szerkezeteket a logikai döntésekhez."
+        }
+      ]
+    }
+  ]
+}

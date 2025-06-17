@@ -1,0 +1,93 @@
+// Alap színek
+$primary: #1976d2;
+$primary-light: #63a4ff;
+$primary-dark: #004ba0;
+$background: #f4f8fb;
+$text: #1a237e;
+$white: #fff;
+$shadow: 0 4px 24px #1976d220;
+
+body {
+  font-family: 'Segoe UI', 'Inter', Arial, sans-serif;
+  background: $background;
+  color: $text;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+nav {
+  background: linear-gradient(90deg, $primary, $primary-light 80%);
+  color: $white;
+  padding: 1.2rem 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  align-items: center;
+  box-shadow: $shadow;
+  border-bottom-left-radius: 18px;
+  border-bottom-right-radius: 18px;
+
+  a {
+    color: $white;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1.08em;
+    transition: color 0.2s;
+    padding: 0.2em 0.7em;
+    border-radius: 8px;
+
+    &:hover,
+    &.active {
+      background: $primary-dark;
+      color: $primary-light;
+    }
+  }
+}
+
+main {
+  max-width: 1000px;
+  margin: 2.5rem auto;
+  background: $white;
+  border-radius: 18px;
+  box-shadow: $shadow;
+  padding: 2.5rem 1.5rem;
+  min-height: 60vh;
+  @media (max-width: 700px) {
+    padding: 1.2rem 0.5rem;
+    margin: 1rem 0.2rem;
+    border-radius: 10px;
+  }
+}
+
+h1, h2, h3 {
+  color: $primary-dark;
+  margin-top: 0;
+}
+
+@media (max-width: 600px) {
+  nav {
+    flex-direction: column;
+    gap: 0.7rem;
+    padding: 1rem 0.5rem;
+    font-size: 1em;
+  }
+  main {
+    padding: 1rem 0.2rem;
+  }
+}
+
+.logoutBtn {
+  margin-top: 1.5em;
+  background: #e57373;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.7em 1.5em;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background 0.2s;
+  &:hover {
+    background: #c62828;
+  }
+}

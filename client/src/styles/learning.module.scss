@@ -1,0 +1,217 @@
+.learningPage {
+  padding: 2rem 0;
+  min-height: 100vh;
+  background: linear-gradient(120deg, #e3f2fd 0%, #f8fafc 100%);
+}
+
+.tabs {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  justify-content: center;
+}
+
+.activeTab {
+  background: #1976d2;
+  color: #fff;
+  border-radius: 20px;
+  padding: 0.6em 2em;
+  font-weight: bold;
+  border: none;
+  box-shadow: 0 2px 8px #1976d220;
+  transition: background 0.2s;
+}
+
+.tabs button {
+  background: #fff;
+  color: #1976d2;
+  border-radius: 20px;
+  padding: 0.6em 2em;
+  border: 1.5px solid #1976d2;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.materialList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: center;
+}
+
+.materialCard {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 2px 16px #1976d220;
+  padding: 1.5rem 2rem;
+  min-width: 260px;
+  max-width: 320px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  outline: none;
+  border: 2px solid transparent;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.materialCard:focus,
+.materialCard:hover {
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 0 4px 24px #1976d240;
+  border: 2px solid #1976d2;
+}
+
+.materialTitle {
+  font-size: 1.18em;
+  font-weight: bold;
+  color: #1976d2;
+  margin-bottom: 0.2em;
+}
+
+.materialMeta {
+  font-size: 0.98em;
+  color: #607d8b;
+  opacity: 0.8;
+}
+
+.slideOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(30, 42, 80, 0.18);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.slideCard {
+  background: #fff;
+  border-radius: 22px;
+  box-shadow: 0 8px 40px #1976d240;
+  padding: 2.5rem 2.5rem 2rem 2.5rem;
+  min-width: 340px;
+  max-width: 540px;
+  min-height: 320px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  outline: none;
+}
+
+.slideHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2em;
+  margin-bottom: 0.5em;
+}
+
+.slideType {
+  font-size: 0.95em;
+  color: #1976d2;
+  font-weight: bold;
+  opacity: 0.8;
+}
+
+.slideTitle {
+  font-size: 1.25em;
+  font-weight: bold;
+  color: #1a237e;
+}
+
+.slideMeta {
+  font-size: 0.98em;
+  color: #607d8b;
+  opacity: 0.8;
+}
+
+.slideNav {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.arrowBtn {
+  background: #e3f2fd;
+  color: #1976d2;
+  border: none;
+  border-radius: 50%;
+  width: 2.5em;
+  height: 2.5em;
+  font-size: 1.5em;
+  cursor: pointer;
+  transition: background 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.arrowBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.arrowBtn:hover:not(:disabled) {
+  background: #bbdefb;
+}
+
+.openBtn {
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 18px;
+  padding: 0.5em 1.5em;
+  font-weight: bold;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.openBtn:hover {
+  background: #1565c0;
+}
+
+.closeBtn {
+  position: absolute;
+  top: 1.1rem;
+  right: 1.1rem;
+  background: #e3f2fd;
+  color: #1976d2;
+  border: none;
+  border-radius: 50%;
+  width: 2.2em;
+  height: 2.2em;
+  font-size: 1.3em;
+  cursor: pointer;
+  transition: background 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.closeBtn:hover {
+  background: #bbdefb;
+}
+
+.slideContent {
+  margin-top: 1rem;
+  font-size: 1.05em;
+}
+
+.materialDesc {
+  color: #37474f;
+  font-size: 0.98em;
+  margin-top: 0.2em;
+}
+
+.slideHint {
+  text-align: center;
+  color: #1976d2;
+  font-size: 1.1em;
+  margin-top: 2em;
+}

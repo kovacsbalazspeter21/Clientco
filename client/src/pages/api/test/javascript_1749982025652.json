@@ -1,0 +1,52 @@
+[
+  {
+    "question": "Mi a JavaScript elsődleges használata?",
+    "answers": [
+      "Mobil alkalmazások fejlesztése",
+      "Asztali alkalmazások készítése",
+      "Webes alkalmazások fejlesztése",
+      "Adatbázis-kezelés"
+    ],
+    "correct": 2
+  },
+  {
+    "question": "Ki fejlesztette ki a JavaScriptet?",
+    "answers": [
+      "Tim Berners-Lee",
+      "Brendan Eich",
+      "Linus Torvalds",
+      "Mark Zuckerberg"
+    ],
+    "correct": 1
+  },
+  {
+    "question": "Hogyan ágyazhatunk be JavaScript kódot egy HTML dokumentumba?",
+    "answers": [
+      "<js>",
+      "<javascript>",
+      "<script>",
+      "<code>"
+    ],
+    "correct": 2
+  },
+  {
+    "question": "Melyik nem JavaScript adattípus?",
+    "answers": [
+      "Szám",
+      "Szöveg",
+      "Objektum",
+      "Fájl"
+    ],
+    "correct": 3
+  },
+  {
+    "question": "Melyik operátor használható logikai ÉS művelethez?",
+    "answers": [
+      "&&",
+      "||",
+      "==",
+      "!="
+    ],
+    "correct": 0
+  }
+]
